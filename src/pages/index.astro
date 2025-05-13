@@ -1,0 +1,29 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import SongList from '../components/music/SongList.astro';
+import AlbumGrid from '../components/music/AlbumGrid.astro';
+import PlaylistCard from '../components/music/PlaylistCard.astro';
+import { getRecentSongs, getTopAlbums, getUserPlaylists } from '../scripts/db';
+
+// This would normally fetch data from IndexedDB
+// For demonstration, we'll use placeholder data
+const recentSongs = await getRecentSongs();
+const topAlbums = await getTopAlbums();
+const playlists = await getUserPlaylists();
+---
+
+<MainLayout title="Home | Umbra Player" currentPage="home">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Welcome to Umbra</h1>
+    <p class="text-dark-400">Your personal music library</p>
+  </div>
+
+  <section class="mb-10">
+    <h2 class="text-2xl font-bold mb-4">Recently Played</h2>
+    <SongList songs={recentSongs} />
+  </section>
+
+  <AlbumGrid albums={topAlbums} title="Top Albums" />
+  
+  <PlaylistCard playlists={playlists} />
+</MainLayout>

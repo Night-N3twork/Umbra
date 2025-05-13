@@ -1,0 +1,233 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import SongList from '../components/music/SongList.astro';
+import { getRecentImports } from '../scripts/db';
+
+// This would normally fetch data from IndexedDB
+// For demonstration, we'll use placeholder data
+const recentImports = await getRecentImports();
+---
+
+<MainLayout title="Import | Umbra Player" currentPage="import">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Import Music</h1>
+    <p class="text-dark-400">Add music to your library</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">From Your Device</h3>
+      <p class="text-dark-400 mb-4">
+        Import music files from your computer. Supported formats: MP3, FLAC, WAV, OGG, M4A.
+      </p>
+      <div class="flex flex-col gap-4">
+        <div 
+          id="dropzone" 
+          class="border-2 border-dashed border-dark-600 rounded-lg p-8 text-center hover:border-primary/50 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-dark-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          <p class="text-dark-300 mb-2">Drag & drop your music files here</p>
+          <p class="text-dark-400 text-sm">or</p>
+          <div class="mt-4">
+            <label for="file-upload" class="bg-primary hover:bg-primary/90 text-white rounded-full py-2 px-6 cursor-pointer inline-block transition">
+              Browse Files
+            </label>
+            <input id="file-upload" type="file" accept=".mp3,.flac,.wav,.ogg,.m4a" multiple class="hidden" />
+          </div>
+        </div>
+        
+        <div id="import-progress" class="hidden">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-dark-300">Importing music...</span>
+            <span id="import-status" class="text-dark-400">0/0 files</span>
+          </div>
+          <div class="w-full bg-dark-700 rounded-full h-2 overflow-hidden">
+            <div id="import-progress-bar" class="bg-primary h-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">From URL</h3>
+      <p class="text-dark-400 mb-4">
+        Import a song by providing a direct link to an audio file.
+      </p>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="import-url" class="text-sm text-dark-300">Audio File URL</label>
+          <input 
+            type="url" 
+            id="import-url" 
+            placeholder="https://example.com/audio.mp3" 
+            class="w-full bg-dark-700/50 border-dark-600 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="import-title" class="text-sm text-dark-300">Song Title</label>
+          <input 
+            type="text" 
+            id="import-title" 
+            placeholder="Enter song title" 
+            class="w-full bg-dark-700/50 border-dark-600 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="import-artist" class="text-sm text-dark-300">Artist Name</label>
+          <input 
+            type="text" 
+            id="import-artist" 
+            placeholder="Enter artist name" 
+            class="w-full bg-dark-700/50 border-dark-600 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+          />
+        </div>
+        <button 
+          id="import-url-btn" 
+          class="bg-primary hover:bg-primary/90 text-white rounded-full py-2 px-6 self-start transition"
+        >
+          Import
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <section>
+    <h2 class="text-2xl font-bold mb-4">Recently Imported</h2>
+    <SongList songs={recentImports} />
+  </section>
+</MainLayout>
+
+<script>
+  import { importMusicFiles, importMusicFromUrl } from '../scripts/fileSystem';
+  
+  // Setup file drag & drop and upload functionality
+  function setupFileImport() {
+    const dropzone = document.getElementById('dropzone');
+    const fileUpload = document.getElementById('file-upload');
+    const importProgress = document.getElementById('import-progress');
+    const importStatus = document.getElementById('import-status');
+    const importProgressBar = document.getElementById('import-progress-bar');
+    
+    // Handle drag & drop
+    if (dropzone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+          dropzone.classList.add('border-primary');
+        }, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+          dropzone.classList.remove('border-primary');
+        }, false);
+      });
+      
+      dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          handleFileImport(files);
+        }
+      }, false);
+    }
+    
+    // Handle file browser
+    if (fileUpload) {
+      fileUpload.addEventListener('change', (e) => {
+        const files = e.target?.files;
+        if (files && files.length > 0) {
+          handleFileImport(files);
+        }
+      }, false);
+    }
+    
+    // Handle file import
+    async function handleFileImport(files) {
+      if (importProgress && importStatus && importProgressBar) {
+        importProgress.classList.remove('hidden');
+        
+        try {
+          // Update the UI with progress
+          importStatus.textContent = `0/${files.length} files`;
+          importProgressBar.style.width = '0%';
+          
+          // Start import process
+          await importMusicFiles(files, (processed, total, percentage) => {
+            importStatus.textContent = `${processed}/${total} files`;
+            importProgressBar.style.width = `${percentage}%`;
+          });
+          
+          // Import complete
+          setTimeout(() => {
+            importProgress.classList.add('hidden');
+            alert('Import complete! Your music has been added to the library.');
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error('Failed to import files:', error);
+          alert('Failed to import some files. Please try again.');
+          importProgress.classList.add('hidden');
+        }
+      }
+    }
+  }
+  
+  // Setup URL import
+  function setupUrlImport() {
+    const importUrlBtn = document.getElementById('import-url-btn');
+    const importUrl = document.getElementById('import-url') as HTMLInputElement;
+    const importTitle = document.getElementById('import-title') as HTMLInputElement;
+    const importArtist = document.getElementById('import-artist') as HTMLInputElement;
+    
+    if (importUrlBtn && importUrl && importTitle && importArtist) {
+      importUrlBtn.addEventListener('click', async () => {
+        const url = importUrl.value.trim();
+        const title = importTitle.value.trim();
+        const artist = importArtist.value.trim();
+        
+        if (!url) {
+          alert('Please enter a valid URL to an audio file.');
+          return;
+        }
+        
+        if (!title) {
+          alert('Please enter a title for the song.');
+          return;
+        }
+        
+        try {
+          importUrlBtn.textContent = 'Importing...';
+          importUrlBtn.setAttribute('disabled', 'true');
+          
+          await importMusicFromUrl(url, {
+            title,
+            artist: artist || 'Unknown Artist'
+          });
+          
+          alert('Song imported successfully!');
+          window.location.reload();
+        } catch (error) {
+          console.error('Failed to import from URL:', error);
+          alert('Failed to import song. Please check the URL and try again.');
+        } finally {
+          importUrlBtn.textContent = 'Import';
+          importUrlBtn.removeAttribute('disabled');
+        }
+      });
+    }
+  }
+  
+  // Initialize import functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    setupFileImport();
+    setupUrlImport();
+  });
+</script>

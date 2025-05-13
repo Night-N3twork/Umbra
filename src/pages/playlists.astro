@@ -1,0 +1,18 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import PlaylistCard from '../components/music/PlaylistCard.astro';
+import { getUserPlaylists } from '../scripts/db';
+
+// This would normally fetch data from IndexedDB
+// For demonstration, we'll use placeholder data
+const playlists = await getUserPlaylists();
+---
+
+<MainLayout title="Playlists | Umbra Player" currentPage="playlists">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Your Playlists</h1>
+    <p class="text-dark-400">Create and manage your music collections</p>
+  </div>
+
+  <PlaylistCard playlists={playlists} showCreateButton={true} />
+</MainLayout>

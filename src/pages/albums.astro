@@ -1,0 +1,18 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import AlbumGrid from '../components/music/AlbumGrid.astro';
+import { getAllAlbums } from '../scripts/db';
+
+// This would normally fetch data from IndexedDB
+// For demonstration, we'll use placeholder data
+const albums = await getAllAlbums();
+---
+
+<MainLayout title="Albums | Umbra Player" currentPage="albums">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Albums</h1>
+    <p class="text-dark-400">Browse your album collection</p>
+  </div>
+
+  <AlbumGrid albums={albums} />
+</MainLayout>

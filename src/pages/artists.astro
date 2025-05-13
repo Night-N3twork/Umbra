@@ -1,0 +1,18 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import ArtistList from '../components/music/ArtistList.astro';
+import { getAllArtists } from '../scripts/db';
+
+// This would normally fetch data from IndexedDB
+// For demonstration, we'll use placeholder data
+const artists = await getAllArtists();
+---
+
+<MainLayout title="Artists | Umbra Player" currentPage="artists">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Artists</h1>
+    <p class="text-dark-400">Browse by artist</p>
+  </div>
+
+  <ArtistList artists={artists} />
+</MainLayout>

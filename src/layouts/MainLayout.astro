@@ -1,0 +1,69 @@
+---
+import Layout from './Layout.astro';
+import Sidebar from '../components/layout/Sidebar.astro';
+import MusicPlayer from '../components/player/MusicPlayer.astro';
+
+interface Props {
+  title: string;
+  currentPage: string;
+}
+
+const { title, currentPage } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="flex h-full">
+    <!-- Sidebar -->
+    <Sidebar currentPage={currentPage} />
+    
+    <!-- Main content area -->
+    <main class="flex-1 overflow-hidden flex flex-col">
+      <!-- Background blur -->
+      <div id="background-blur" class="fixed inset-0 -z-10 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 opacity-90">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+      </div>
+      
+      <!-- Content -->
+      <div class="flex-1 overflow-auto px-8 py-6">
+        <slot />
+      </div>
+      
+      <!-- Music player -->
+      <MusicPlayer />
+    </main>
+  </div>
+</Layout>
+
+<script>
+  // Background animation and dynamic color based on current song
+  let currentSongColors = {
+    primary: 'rgba(242, 71, 105, 0.15)',   // #f24769 with opacity
+    secondary: 'rgba(141, 11, 229, 0.15)'  // #8d0be5 with opacity
+  };
+
+  // Update background blur with song colors
+  function updateBackgroundBlur() {
+    const bgElement = document.getElementById('background-blur');
+    if (bgElement) {
+      bgElement.style.background = `
+        radial-gradient(circle at 10% 20%, ${currentSongColors.primary} 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, ${currentSongColors.secondary} 0%, transparent 50%),
+        linear-gradient(to bottom right, #121212, #181818)
+      `;
+    }
+  }
+
+  // Initialize background
+  updateBackgroundBlur();
+
+  // Listen for song changes to update background
+  document.addEventListener('songChange', (e) => {
+    // This would be updated with real color extraction from album art
+    // For now we'll just use random variations of our theme colors
+    currentSongColors = {
+      primary: `rgba(242, ${Math.floor(Math.random() * 100) + 50}, 105, 0.15)`,
+      secondary: `rgba(${Math.floor(Math.random() * 100) + 100}, 11, 229, 0.15)`
+    };
+    updateBackgroundBlur();
+  });
+</script>

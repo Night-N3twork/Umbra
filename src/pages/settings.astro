@@ -1,0 +1,272 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { getDatabaseStats } from '../scripts/db';
+
+const dbStats = await getDatabaseStats();
+---
+
+<MainLayout title="Settings | Umbra Player" currentPage="settings">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Settings</h1>
+    <p class="text-dark-400">Customize your music experience</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8">
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">Playback</h3>
+      
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <label for="crossfade" class="text-sm text-dark-300 flex justify-between">
+            <span>Crossfade (seconds)</span>
+            <span id="crossfade-value">2</span>
+          </label>
+          <input 
+            type="range" 
+            id="crossfade" 
+            min="0" 
+            max="12" 
+            step="1" 
+            value="2"
+            class="w-full accent-primary bg-dark-700 h-2 rounded-full appearance-none cursor-pointer"
+          />
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label for="normalize" class="text-sm text-dark-300">Volume Normalization</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="normalize" class="sr-only peer" checked>
+            <div class="relative w-11 h-6 bg-dark-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label for="gapless" class="text-sm text-dark-300">Gapless Playback</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="gapless" class="sr-only peer">
+            <div class="relative w-11 h-6 bg-dark-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label for="replaygain" class="text-sm text-dark-300">ReplayGain</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="replaygain" class="sr-only peer">
+            <div class="relative w-11 h-6 bg-dark-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">Display</h3>
+      
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <label for="theme" class="text-sm text-dark-300">Theme</label>
+          <select 
+            id="theme" 
+            class="w-full bg-dark-700/50 border-dark-600 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+          >
+            <option value="dark">Dark (Default)</option>
+            <option value="system">System Preference</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+        
+        <div class="flex flex-col gap-2">
+          <label for="accent-color" class="text-sm text-dark-300">Accent Color</label>
+          <div class="grid grid-cols-5 gap-2">
+            <button class="w-full aspect-square rounded-full bg-primary border-2 border-white"></button>
+            <button class="w-full aspect-square rounded-full bg-blue-500"></button>
+            <button class="w-full aspect-square rounded-full bg-green-500"></button>
+            <button class="w-full aspect-square rounded-full bg-yellow-500"></button>
+            <button class="w-full aspect-square rounded-full bg-purple-500"></button>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label for="animations" class="text-sm text-dark-300">Enable Animations</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="animations" class="sr-only peer" checked>
+            <div class="relative w-11 h-6 bg-dark-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label for="blurred-bg" class="text-sm text-dark-300">Dynamic Background</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="blurred-bg" class="sr-only peer" checked>
+            <div class="relative w-11 h-6 bg-dark-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">Data Management</h3>
+      
+      <div class="space-y-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Database Size</span>
+            <span class="text-dark-100">{dbStats.databaseSize}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Song Count</span>
+            <span class="text-dark-100">{dbStats.songCount} songs</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Album Count</span>
+            <span class="text-dark-100">{dbStats.albumCount} albums</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Artist Count</span>
+            <span class="text-dark-100">{dbStats.artistCount} artists</span>
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-2 pt-2">
+          <button id="export-library" class="w-full bg-dark-700 hover:bg-dark-600 text-dark-100 rounded-lg py-2 px-4 text-sm transition">
+            Export Library Data
+          </button>
+          <button id="clear-cache" class="w-full bg-dark-700 hover:bg-dark-600 text-dark-100 rounded-lg py-2 px-4 text-sm transition">
+            Clear Cache
+          </button>
+          <button id="reset-library" class="w-full bg-red-900/30 hover:bg-red-900/50 text-red-200 rounded-lg py-2 px-4 text-sm transition">
+            Reset Library
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-dark-800/50 backdrop-blur-sm p-6 rounded-xl">
+      <h3 class="text-xl font-semibold mb-4">About</h3>
+      
+      <div class="space-y-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Version</span>
+            <span class="text-dark-100">1.0.0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-dark-300">Built with</span>
+            <span class="text-dark-100">Astro + TailwindCSS</span>
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-2 pt-2">
+          <a href="https://github.com" target="_blank" class="w-full bg-dark-700 hover:bg-dark-600 text-dark-100 rounded-lg py-2 px-4 text-sm text-center transition">
+            GitHub Repository
+          </a>
+          <a href="#" id="check-updates" class="w-full bg-dark-700 hover:bg-dark-600 text-dark-100 rounded-lg py-2 px-4 text-sm text-center transition">
+            Check for Updates
+          </a>
+        </div>
+        
+        <div class="mt-4 text-xs text-dark-400 text-center">
+          &copy; 2025 Umbra Player. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  import { exportLibrary, clearCache, resetLibrary } from '../scripts/db';
+  
+  // Update crossfade value display
+  const crossfade = document.getElementById('crossfade') as HTMLInputElement;
+  const crossfadeValue = document.getElementById('crossfade-value');
+  
+  if (crossfade && crossfadeValue) {
+    crossfade.addEventListener('input', () => {
+      crossfadeValue.textContent = crossfade.value;
+    });
+  }
+  
+  // Data management buttons
+  const exportLibraryBtn = document.getElementById('export-library');
+  const clearCacheBtn = document.getElementById('clear-cache');
+  const resetLibraryBtn = document.getElementById('reset-library');
+  
+  if (exportLibraryBtn) {
+    exportLibraryBtn.addEventListener('click', async () => {
+      try {
+        await exportLibrary();
+        alert('Library data exported successfully!');
+      } catch (error) {
+        console.error('Failed to export library:', error);
+        alert('Failed to export library data. Please try again.');
+      }
+    });
+  }
+  
+  if (clearCacheBtn) {
+    clearCacheBtn.addEventListener('click', async () => {
+      if (confirm('This will clear the audio cache. The song metadata will be preserved. Continue?')) {
+        try {
+          await clearCache();
+          alert('Cache cleared successfully!');
+        } catch (error) {
+          console.error('Failed to clear cache:', error);
+          alert('Failed to clear cache. Please try again.');
+        }
+      }
+    });
+  }
+  
+  if (resetLibraryBtn) {
+    resetLibraryBtn.addEventListener('click', async () => {
+      if (confirm('WARNING: This will delete all your music data and cannot be undone. Continue?')) {
+        if (confirm('Are you absolutely sure? All your music library information will be lost.')) {
+          try {
+            await resetLibrary();
+            alert('Library reset successfully! Reloading page...');
+            window.location.reload();
+          } catch (error) {
+            console.error('Failed to reset library:', error);
+            alert('Failed to reset library. Please try again.');
+          }
+        }
+      }
+    });
+  }
+  
+  // Check for updates
+  const checkUpdatesBtn = document.getElementById('check-updates');
+  
+  if (checkUpdatesBtn) {
+    checkUpdatesBtn.addEventListener('click', () => {
+      alert('You are using the latest version!');
+    });
+  }
+  
+  // Theme selection
+  const themeSelect = document.getElementById('theme') as HTMLSelectElement;
+  
+  if (themeSelect) {
+    themeSelect.addEventListener('change', () => {
+      // This would normally update the theme
+      const selectedTheme = themeSelect.value;
+      document.documentElement.className = selectedTheme === 'light' ? 'light' : 'dark';
+    });
+  }
+  
+  // Accent color selection
+  const accentButtons = document.querySelectorAll('[id^="accent-color"] button');
+  
+  accentButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Remove selected state from all buttons
+      accentButtons.forEach(btn => btn.classList.remove('border-white'));
+      
+      // Add selected state to clicked button
+      button.classList.add('border-white');
+      
+      // This would normally update the accent color
+      // For now, just show a message
+      console.log('Accent color changed!');
+    });
+  });
+</script>
